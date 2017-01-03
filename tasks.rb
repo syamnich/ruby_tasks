@@ -225,21 +225,8 @@ end
 
 # Сортировка массива: массив строк упорядочить по длине слов (группировка по длине слов)
 def sort_by_length
-  p a = ['three', 'four', 'one', 'si']
-  i = 0
-  while i < a.size do
-    j = i + 1
-    while j < a.size do
-      if a[i].size > a[j].size
-        t = a[i]
-        a[i] = a[j]
-        a[j] = t
-      end
-      j += 1
-    end
-    i += 1
-  end
-  p a
+  p a = ['three', 'one', 'four', 'six', 'ten', 'si', 'am']
+  p h = a.inject(Hash.new{[]}) { |acc, el| acc[el.size] += [el]; acc }.sort.to_h
 end
 
 # Поиск в массиве: локальные максимумы
@@ -291,10 +278,24 @@ def new_all?(array)
   end
 end
 
-a = [nil, 3, 3, 7, 6]
-p new_all?(a) #{ |i| i > 5 }
+# any? через reduce
+def new_any?(array)
+  if block_given?
+    array.reduce(false) { |acc, el| return true if yield(el); acc }
+  else
+    array.reduce(false) { |acc, el| return true if el != nil && el != false; acc }
+  end
+end
 
 # flatten
-def new_flatten
-  p a = [[1, 2, 3], [4, 5, 6], [7, [8, 9]]]
+def new_flatten(arrays, level = -1) 
+  flat = []
+  arrays.each do |el|
+    if level != 0 && el.kind_of?(Array)
+      flat.concat(new_flatten(el, level - 1))
+    else
+      flat << el
+    end
+  end
+  flat
 end
