@@ -314,10 +314,6 @@ def hash_merge(h1, h2)
   h
 end
 
-h1 = { a: 10, b: 20 }
-h2 = { b: 50, c: 30 }
-p hash_merge(h1, h2)# { |key,oldval,newval| newval - oldval }
-
 def sort_by_last_name
   p a = ['James Bond', 'John Rambo', 'John Bond', 'Jack Rambo', 'Billy Idol']
   p a.map { |i| i.split(' ') }.inject(Hash.new{[]}) { |acc, el| acc[el.last] += [el.join(' ')]; acc }
