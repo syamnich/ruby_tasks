@@ -299,3 +299,26 @@ def new_flatten(arrays, level = -1)
   end
   flat
 end
+
+def hash_merge(h1, h2)
+  if block_given?
+    h = {}
+    common_keys = h1.select { |k, v| h2.has_key?(k) }.keys
+    h1.each{ |k, v| h[k] = v unless common_keys.include?(k) }
+    h2.each{ |k, v| h[k] = v unless common_keys.include?(k) }
+    common_keys.each { |k| h[k] = yield(k, h1[k], h2[k]) }
+  else
+    h = h1
+    h2.each { |k, v| h[k] = v }
+  end
+  h
+end
+
+h1 = { a: 10, b: 20 }
+h2 = { b: 50, c: 30 }
+p hash_merge(h1, h2)# { |key,oldval,newval| newval - oldval }
+
+def sort_by_last_name
+  p a = ['James Bond', 'John Rambo', 'John Bond', 'Jack Rambo', 'Billy Idol']
+  p a.map { |i| i.split(' ') }.inject(Hash.new{[]}) { |acc, el| acc[el.last] += [el.join(' ')]; acc }
+end
