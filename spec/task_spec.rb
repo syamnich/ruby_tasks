@@ -238,6 +238,7 @@ describe 'Task' do
       h1 = { a: 100, b: 200 }
       h2 = { b: 254, c: 300 }
       expect(hash_merge(h1, h2)).to eq({ a: 100, b: 254, c: 300})
+      expect(hash_merge(h1, h2) { |k, ov, nv| nv-ov }).to eq({ a: 100, b: 54, c: 300})
     end
 
     it 'hash_merge' do

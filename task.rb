@@ -274,7 +274,7 @@ def hash_merge(h1, h2)
     h2.each{ |k, v| h[k] = v unless common_keys.include?(k) }
     common_keys.each { |k| h[k] = yield(k, h1[k], h2[k]) }
   else
-    h = h1
+    h = h1.dup
     h2.each { |k, v| h[k] = v }
   end
   h
