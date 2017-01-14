@@ -21,13 +21,13 @@ end
 
 # 17. Дан целочисленный массив. Найти количество его локальных максимумов.
 def task17 a
-  a[1..a.size - 2].select.with_index(1) { |v, i| a[i] > a[i - 1] && a[i] > a[i + 1] }.count
+  a.each_cons(3).select.count { |x, y, z| y > x && y > z }
 end
 
 # 21. Дан целочисленный массив. Определить количество участков, на которых его элементы монотонно возрастают.
 def task21 a
   count = 0
-  a[0..a.size-2].each.with_index do |v, i| 
+  a[0..-2].each_with_index do |v, i| 
     if v > a[i+1] && i > 0 && v >= a[i-1] || v <= a[i+1] && i == a.size-2
       count += 1
     end
@@ -37,15 +37,7 @@ end
 
 # 25. Дан целочисленный массив. Преобразовать его, вставив перед каждым положительным элементом нулевой элемент.
 def task25 a
-  i = 0
-  a[0..a.size-1].each do |v| 
-    if v > 0
-      a.insert(i, a.first) 
-      i += 1
-    end
-    i += 1
-  end
-  a
+  a.reduce([]) { |acc, i| acc << a.first if i > 0; acc << i; acc }
 end
 
 # 29. Дан целочисленный массив. Упорядочить его по возрастанию
@@ -92,12 +84,12 @@ end
 # 57. Дан целочисленный массив. Найти индекс первого экстремального (то есть минимального или 
 # максимального) элемента.
 def task57 a
-  a.index(a.min) < a.index(a.max) ? a.index(a.min) : a.index(a.max)
+  [a.index(a.max), a.index(a.min)].min
 end
 
 # 61. Дан целочисленный массив. Найти два наибольших элемента.
 def task61 a
-  a.sort[a.last,a.last - 1]
+  a.sort[-2..-1]
 end
 
 # 65. Дан целочисленный массив. Вывести вначале все его четные элементы, а затем - нечетные.
@@ -108,10 +100,7 @@ end
 # 69. Дано вещественное число R и массив вещественных чисел. 
 # Найти два элемента массива, сумма которых наиболее близка к данному числу.
 def task69 a, r
-  comb = a.combination(2).to_a
-  min = comb.map { |i| [i.first, i.last, (i.first + i.last - r).abs] }.min_by { |arr| arr.last }
-  min.pop
-  min
+  a.combination(2).to_a.min_by { |(x, y)| (x + y - r).abs }
 end
 
 # 73. Дан целочисленный массив. Удалить все элементы, встречающиеся ровно два раза.
@@ -121,22 +110,21 @@ end
 
 # 77. Дано целое число. Найти сумму его цифр
 def task77 n
-  n.to_s.chars.inject(0){ |acc, i| acc + i.to_i}
+  n.to_s.chars.inject(0){ |acc, i| acc + i.to_i }
 end
 
 # 81. Дан дипапазон a..b. Получить массив из чисел, расположенных в этом диапазоне 
 # (исключая сами эти числа), в порядке их убывания, а также размер этого массива.
 def task81 range
   a = range.to_a
-  b = a[1..a.size-2].reverse
-  {array: b, size: b.size}
+  b = a[1..-2].reverse
+  { array: b, size: b.size }
 end
 
 # 85. Дано натуральное число N. Если N - нечетное, то найти произведение 1*3*…*N; если N - четное, 
 # то найти произведение 2*4*…*N.
 def task85 n
-  a = (1..n).to_a
-  a.partition { |i| i.even? }.select { |i| i.index(a.last) }.flatten.inject(1) { |acc, i| acc * i }
+  n.step(1, -2).reduce(:*)
 end
 
 # 89. Дан целочисленный массив. Найти все нечетные элементы.
@@ -147,7 +135,7 @@ end
 # 93. Дан целочисленный массив и число К. 
 # Если все элементы массива меньше К, то вывести true; в противном случае вывести false.
 def task93 a, k
-  a.select { |i| i > k }.count == 0 ? true : false
+  a.count { |i| i > k } == 0
 end
 
 # 97. Дан целочисленный массив и число К. Вывести индекс последнего элемента, меньшего К.
@@ -159,14 +147,14 @@ end
 # которые больше своего левого соседа, и количество таких чисел.
 def task101 a
   arr = []
-  a[1..a.size-1].each.with_index(1) { |v, i| arr << i if v > a[i-1] }
+  a[1..-1].each.with_index(1) { |v, i| arr << i if v > a[i-1] }
   { indices: arr, count: arr.size }
 end
 
 # 105. Дан целочисленный массив. Если данный массив образует убывающую последовательность, то вывести nil, 
 # в противном случае вывести номер первого числа, нарушающего закономерность.
 def task105 a
-  a[1..a.size-1].detect.with_index(1) { |v, i| v > a[i-1] }
+  a[1..-1].detect.with_index(1) { |v, i| v > a[i-1] }
 end
 
 # 109. Дан целочисленный массив. Найти минимальный и максимальный элемент в массиве.
@@ -238,18 +226,18 @@ end
 # all? через reduce
 def new_all?(array)
   if block_given?
-    array.reduce(true) { |acc, el| return false if !yield(el); acc }
+    array.reduce(true) { |acc, el| acc && yield(el) }
   else
-    array.reduce(true) { |acc, el| return false if el == nil || el == false; acc }
+    array.reduce(true) { |acc, el| acc && !el.nil? && !el == false }
   end
 end
 
 # any? через reduce
 def new_any?(array)
   if block_given?
-    array.reduce(false) { |acc, el| return true if yield(el); acc }
+    array.reduce(false) { |acc, el| acc || yield(el) }
   else
-    array.reduce(false) { |acc, el| return true if el != nil && el != false; acc }
+    array.reduce(false) { |acc, el| acc || (!el.nil? && !el == false) }
   end
 end
 

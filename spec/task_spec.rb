@@ -27,8 +27,10 @@ describe 'Task' do
     it '17' do
       a = [2, 3, 1, -1, 0, -2, 4]
       b = [8, 3, 1, 5, 2, 6]
+      c = [1,1,1]
       expect(task17 a).to eq 2
       expect(task17 b).to eq 1
+      expect(task17 c).to eq 0
     end
 
     it '21' do
@@ -216,6 +218,8 @@ describe 'Task' do
       expect(new_all?(a) { |i| i >= 1 }).to eq true
       a = [nil, true, 99]
       expect(new_all?(a)).to eq false
+      a = [false, true, 99]
+      expect(new_all?(a)).to eq false
       a = [1, true, 99]
       expect(new_all?(a)).to eq true
     end
@@ -226,6 +230,12 @@ describe 'Task' do
       expect(new_any?(a) { |i| i >= 1 }).to eq true
       a = [nil, true, 99]
       expect(new_any?(a)).to eq true
+      a = [false, true, 99]
+      expect(new_any?(a)).to eq true
+      a = [1, true, 99]
+      expect(new_any?(a)).to eq true
+      a = [nil, false]
+      expect(new_any?(a)).to eq false
     end
 
     it 'new_flatten?' do
